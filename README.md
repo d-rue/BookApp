@@ -20,3 +20,8 @@ Tests are in the Test Folder:
 | BookControllerTests |
 | BookServiceTests |
 | BookRepositoryTests |
+
+
+CI/CD:  
+Java with Maven  
+Build & Push Docker image

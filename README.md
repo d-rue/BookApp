@@ -22,6 +22,6 @@ Tests are in the Test Folder:
 | BookRepositoryTests |
 
 
-CI/CD:
+CI/CD:  
 Java with Maven  
 Build & Push Docker image

@@ -1,5 +1,6 @@
 package de.drue.BookApp.Controller;
 
+import de.drue.BookApp.DTO.BookDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,77 +27,35 @@ public class BookController {
     @RequestMapping(value = "/listBooks",
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Book>> listAllBooks(){
+    public ResponseEntity<List<BookDTO>> listAllBooks(){
         return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/book/{id}",
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Optional<Book>> listOneBook(@PathVariable long id){
-        Optional<Book> book = bookService.getOneBookById(id);
-
-        HttpStatus httpStatus;
-        if (book.isPresent()){
-            httpStatus = HttpStatus.OK;
-        }
-        else{
-            httpStatus = HttpStatus.NOT_FOUND;
-        }
-
-        return new ResponseEntity<>(book, httpStatus);
+    public ResponseEntity<BookDTO> listOneBook(@PathVariable long id){
+        return new ResponseEntity<>(bookService.getOneBookById(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/book/{id}",
                     method = RequestMethod.DELETE,
                     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Optional<Long>> deleteOneBook(@PathVariable long id){
-        Optional<Long> bookId = bookService.removeOneBook(id);
-
-        HttpStatus httpStatus;
-        if (bookId.isPresent()){
-            httpStatus = HttpStatus.OK;
-        }
-        else{
-            httpStatus = HttpStatus.NOT_FOUND;
-        }
-
-        return new ResponseEntity<>(bookId, httpStatus);
+    public ResponseEntity<Long> deleteOneBook(@PathVariable long id){
+        return new ResponseEntity<>(bookService.removeOneBook(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/book",
                     method = RequestMethod.PUT,
                     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Optional<Book>> putOneBook(@RequestBody Book book){
-
-        System.out.println(book);
-        Optional<Book> reBook = bookService.updateByPutOneBook(book);
-
-        HttpStatus httpStatus;
-        if (reBook.isPresent()){
-            httpStatus = HttpStatus.OK;
-        }
-        else{
-            httpStatus = HttpStatus.NOT_FOUND;
-        }
-
-        return new ResponseEntity<>(reBook, httpStatus);
+    public ResponseEntity<BookDTO> putOneBook(@RequestBody BookDTO bookDTO){
+        return new ResponseEntity<>(bookService.updateByPutOneBook(bookDTO), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/book",
                     method = RequestMethod.PATCH,
                     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Optional<Book>> patchOneBook(@RequestBody Book book){
-        Optional<Book> reBook = bookService.updateByPatchOneBook(book);
-
-        HttpStatus httpStatus;
-        if (reBook.isPresent()){
-            httpStatus = HttpStatus.OK;
-        }
-        else{
-            httpStatus = HttpStatus.NOT_FOUND;
-        }
-
-        return new ResponseEntity<>(reBook, httpStatus);
+    public ResponseEntity<BookDTO> patchOneBook(@RequestBody BookDTO bookDTO){
+        return new ResponseEntity<>(bookService.updateByPatchOneBook(bookDTO), HttpStatus.OK);
     }
 }

@@ -1,7 +1,9 @@
 package de.drue.BookApp.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.drue.BookApp.DTO.BookDTO;
 import de.drue.BookApp.Entity.Book;
+import de.drue.BookApp.Mapper.ToDTOMapper;
 import de.drue.BookApp.Service.BookService;
 import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,9 +21,13 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -33,14 +39,15 @@ public class BookControllerTests {
     private ObjectMapper objectMapper;
     @MockBean
     private BookService bookService;
-    private Book book1;
-    private Book book2;
-    private Book bookId;
-    private List<Book> listBooks = new ArrayList<>();
+    private ToDTOMapper toDTOMapper = new ToDTOMapper();
+    private Book book;
+    private BookDTO bookDTO;
+    private List<Book> listBook = new ArrayList<>();
+    private List<BookDTO> listBookDTO = new ArrayList<>();
 
     @BeforeEach
     public void init(){
-        bookId = Book.builder()
+        book = Book.builder()
                 .id(1L)
                 .title("1. Titel")
                 .genre("1. Genre")
@@ -48,103 +55,87 @@ public class BookControllerTests {
                 .publisher("1. Publisher")
                 .build();
 
-        book1 = Book.builder()
-                .title("1. Titel")
-                .genre("1. Genre")
-                .author("1. Author")
-                .publisher("1. Publisher")
-                .build();
-
-        book2 = Book.builder()
-                .title("2. Titel")
-                .genre("2. Genre")
-                .author("2. Author")
-                .publisher("2. Publisher")
-                .build();
-
-        listBooks = List.of(book1, book2);
+        bookDTO = toDTOMapper.apply(book);
     }
 
     @Test
-    public void BookController_ListAllBooks_ReturnsListBooks() throws Exception {
+    public void bookControllerListAllBooksReturnsListBookDTO() throws Exception {
         // Arrange
-        Mockito.when(bookService.getAllBooks()).thenReturn(listBooks);
+        listBook = List.of(book);
+        listBookDTO = List.of(bookDTO);
+        Mockito.when(bookService.getAllBooks()).thenReturn(listBookDTO);
 
         // Act
         ResultActions response = mockMvc.perform(get("/api/listBooks"));
 
         // Assert
-        response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(JSONArray.toJSONString(listBooks))
+        response.andExpect(status().isOk())
+                .andExpect(content().json(JSONArray.toJSONString(listBook))
         );
     }
 
     @Test
-    public void BookController_ListOneBook_ReturnsOptionalBook() throws Exception {
+    public void bookControllerListBookReturnsBookDTO() throws Exception {
         // Arrange
-        Mockito.when(bookService.getOneBookById(1L)).thenReturn(Optional.of(book1));
+        Mockito.when(bookService.getOneBookById(1L)).thenReturn(bookDTO);
 
         // Act
         ResultActions response = mockMvc.perform(get("/api/book/1"));
 
         // Assert
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book1))
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
                 );
     }
 
     @Test
-    public void BookController_DeleteOneBook_ReturnsOptionalLong() throws Exception {
+    public void bookControllerDeleteOneBookReturnsLong() throws Exception {
         // Arrange
-        Long id = 1L;
-
-        Mockito.when(bookService.removeOneBook(id)).thenReturn(Optional.of(id));
+        long id = 1L;
+        Mockito.when(bookService.removeOneBook(id)).thenReturn(id);
 
         // Act
         ResultActions response = mockMvc.perform(delete("/api/book/1"));
 
         // Assert
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(id.toString())
+                .andExpect(MockMvcResultMatchers.content().json(Long.toString(id))
                 );
     }
 
     @Test
-    public void BookController_PutOneBook_ReturnsOptionalBook() throws Exception {
+    public void bookControllerPutOneBookReturnsBookDTO() throws Exception {
         // Arrange
-        Mockito.when(bookService.updateByPutOneBook(book1)).thenReturn(Optional.of(bookId));
+        Mockito.when(bookService.updateByPutOneBook(bookDTO)).thenReturn(bookDTO);
 
         // Act
         ResultActions response = mockMvc.perform(
                 put("/api/book")
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .content(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book1))
+                        .content(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
         );
 
         // Assert
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(bookId))
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
                 );
     }
 
     @Test
-    public void BookController_PatchOneBook_ReturnsOptionalBook() throws Exception {
+    public void bookControllerPatchOneBookReturnsBookDTO() throws Exception {
         // Arrange
-        Mockito.when(bookService.updateByPatchOneBook(book1)).thenReturn(Optional.of(bookId));
+        Mockito.when(bookService.updateByPatchOneBook(bookDTO)).thenReturn(bookDTO);
 
         // Act
         ResultActions response = mockMvc.perform(
                         patch("/api/book")
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .content(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book1))
+                        .content(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
         );
 
         // Assert
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(bookId))
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
                 );
     }
-
-
-    //                .andDo(MockMvcResultHandlers.print())
 }

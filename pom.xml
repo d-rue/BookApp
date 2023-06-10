@@ -6,13 +6,13 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.1.0</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>de.drue</groupId>
 	<artifactId>BookApp</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1</version>
 	<name>BookApp</name>
-	<description>Book demo project for Spring Boot</description>
+	<description>Book project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -47,7 +47,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -57,5 +56,4 @@
 		</plugins>
 		<finalName>springboot-bookapp</finalName>
 	</build>
-
 </project>

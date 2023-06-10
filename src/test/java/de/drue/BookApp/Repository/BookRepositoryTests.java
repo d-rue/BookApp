@@ -1,7 +1,7 @@
 package de.drue.BookApp.Repository;
 
 import de.drue.BookApp.Entity.Book;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +10,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.List;
 import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class BookRepositoryTests {
-
     @Autowired
     private BookRepository bookRepository;
-
     private Book book1;
     private Book book2;
-
     private List<Book> listBooks;
 
     @BeforeEach
@@ -42,20 +40,25 @@ public class BookRepositoryTests {
         listBooks = List.of(book1, book2);
     }
 
+    @AfterEach
+    void tearDown() {
+        bookRepository.deleteAll();
+    }
+
     @Test
-    public void BookRepository_Save_ReturnsSavedBook(){
+    public void bookRepositorySaveReturnsSavedBook(){
         // Arrange
 
         // Act
         Book savedBook = bookRepository.save(book1);
 
         // Assert
-        Assertions.assertThat(savedBook).isNotNull();
-        Assertions.assertThat(savedBook.getId()).isGreaterThan(0);
+        assertThat(savedBook).isNotNull();
+        assertThat(savedBook.getId()).isGreaterThan(0);
     }
 
     @Test
-    public void BookRepository_FindAll_ReturnsMoreThanOneBook(){
+    public void bookRepositoryFindAllReturnsListBooks(){
         // Arrange
 
         // Act
@@ -65,12 +68,23 @@ public class BookRepositoryTests {
         List<Book> bookList = bookRepository.findAll();
 
         //Assert
-        Assertions.assertThat(bookList).isNotNull();
-        Assertions.assertThat(bookList.size()).isEqualTo(2);
+        assertThat(bookList).isNotNull();
+        assertThat(bookList.size()).isEqualTo(2);
     }
 
     @Test
-    public void BookRepository_FindById_ReturnsOneBookNotNull(){
+    public void bookRepositoryFindAllReturnsListEmpty(){
+        // Arrange
+
+        // Act
+        List<Book> bookList = bookRepository.findAll();
+
+        //Assert
+        assertThat(bookList.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void bookRepositoryFindByIdReturnsBook(){
         // Arrange
 
         // Act
@@ -79,102 +93,44 @@ public class BookRepositoryTests {
         Book savedBook = bookRepository.findById(book1.getId()).get();
 
         //Assert
-        Assertions.assertThat(savedBook).isNotNull();
-        Assertions.assertThat(savedBook).isEqualTo(book1);
+        assertThat(savedBook).isNotNull();
+        assertThat(savedBook).isEqualTo(book1);
     }
 
     @Test
-    public void BookRepository_FindById_ReturnsOneBook(){
+    public void bookRepositoryFindByIdReturnsOptionalEmpty(){
+        // Arrange
+
+        // Act
+        Optional<Book> savedBook = bookRepository.findById(book1.getId());
+
+        //Assert
+
+        assertThat(savedBook).isEqualTo(Optional.empty());
+    }
+
+    @Test
+    public void bookRepositoryUpdateOneBookReturnsBook(){
         // Arrange
 
         // Act
         bookRepository.save(book1);
 
-        Book savedBook = bookRepository.findById(book1.getId()).get();
+        Book toUpdateBook = bookRepository.findById(book1.getId()).get();
+        toUpdateBook.setAuthor("2. Author");
+        toUpdateBook.setGenre("2. Genre");
+
+        Book updatedBook = bookRepository.save(toUpdateBook);
 
         //Assert
-        Assertions.assertThat(savedBook).isNotNull();
-        Assertions.assertThat(savedBook).isEqualTo(book1);
+        assertThat(updatedBook.getAuthor()).isNotNull();
+        assertThat(updatedBook.getGenre()).isNotNull();
+        assertThat(updatedBook.getAuthor()).isEqualTo(toUpdateBook.getAuthor());
+        assertThat(updatedBook.getGenre()).isEqualTo(toUpdateBook.getGenre());
     }
 
     @Test
-    public void BookRepository_FindByTitle_ReturnsOneBook(){
-        // Arrange
-
-        // Act
-        bookRepository.save(book1);
-
-        Book savedBook = bookRepository.findByTitle(book1.getTitle()).get();
-
-        //Assert
-        Assertions.assertThat(savedBook).isNotNull();
-        Assertions.assertThat(savedBook).isEqualTo(book1);
-    }
-
-    @Test
-    public void BookRepository_FindByAuthor_ReturnsOneBook(){
-        // Arrange
-
-        // Act
-        bookRepository.save(book1);
-
-        Book savedBook = bookRepository.findByAuthor(book1.getAuthor()).get();
-
-        //Assert
-        Assertions.assertThat(savedBook).isNotNull();
-        Assertions.assertThat(savedBook).isEqualTo(book1);
-    }
-
-    @Test
-    public void BookRepository_FindByGenre_ReturnsOneBook(){
-        // Arrange
-
-        // Act
-        bookRepository.save(book1);
-
-        Book savedBook = bookRepository.findByGenre(book1.getGenre()).get();
-
-        //Assert
-        Assertions.assertThat(savedBook).isNotNull();
-        Assertions.assertThat(savedBook).isEqualTo(book1);
-    }
-
-    @Test
-    public void BookRepository_FindByPublisher_ReturnsOneBook(){
-        // Arrange
-
-        // Act
-        bookRepository.save(book1);
-
-        Book savedBook = bookRepository.findByPublisher(book1.getPublisher()).get();
-
-        //Assert
-        Assertions.assertThat(savedBook).isNotNull();
-        Assertions.assertThat(savedBook).isEqualTo(book1);
-    }
-
-    @Test
-    public void BookRepository_UpdateBook_ReturnsOneBook(){
-        // Arrange
-
-        // Act
-        bookRepository.save(book1);
-
-        Book savedBook = bookRepository.findById(book1.getId()).get();
-        savedBook.setAuthor("2. Author");
-        savedBook.setGenre("2. Genre");
-
-        Book updatedBook = bookRepository.save(savedBook);
-
-        //Assert
-        Assertions.assertThat(updatedBook.getAuthor()).isNotNull();
-        Assertions.assertThat(updatedBook.getGenre()).isNotNull();
-        Assertions.assertThat(updatedBook.getAuthor()).isEqualTo(savedBook.getAuthor());
-        Assertions.assertThat(updatedBook.getGenre()).isEqualTo(savedBook.getGenre());
-    }
-
-    @Test
-    public void BookRepository_DeleteBook_ReturnsOneBookIsEmprty(){
+    public void bookRepositoryDeleteBookReturnsBookEmpty(){
         // Arrange
 
         // Act
@@ -185,7 +141,7 @@ public class BookRepositoryTests {
         Optional<Book> returnedBook = bookRepository.findById(book1.getId());
 
         //Assert
-        Assertions.assertThat(returnedBook).isEmpty();
+        assertThat(returnedBook).isEmpty();
     }
 
 }

@@ -1,6 +1,5 @@
 # BookApp
-A simple Spring Boot book application, which saves randomly generated book data to an In-Memory H2 Database at start up.  
-This is handled by a Book Repository Interface of JpaRepository covering the Book Entity.  
+A Spring Boot Application, which saves randomly generated book data to an In-Memory H2 Database at start up.  
 
 Accessible Endpoints at http://localhost:8080:
 
@@ -24,4 +23,6 @@ Tests are in the Test Folder:
 
 CI/CD:  
 Java with Maven  
-Build & Push Docker image
+Build & Push Docker image  
+  
+Super Linter

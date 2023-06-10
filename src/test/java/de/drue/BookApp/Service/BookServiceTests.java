@@ -1,49 +1,35 @@
 package de.drue.BookApp.Service;
 
+import de.drue.BookApp.DTO.BookDTO;
 import de.drue.BookApp.Entity.Book;
+import de.drue.BookApp.Mapper.ToDTOMapper;
+import de.drue.BookApp.Mapper.ToEntityMapper;
 import de.drue.BookApp.Repository.BookRepository;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTests {
-
     @Mock
     private BookRepository bookRepository;
-
-    @InjectMocks
     private BookService bookService;
+    private ToDTOMapper toDTOMapper = new ToDTOMapper();
+    private ToEntityMapper toEntityMapper = new ToEntityMapper();
+    private Book book;
+    private BookDTO bookDTO;
 
-    @Test
-    public void BookService_GetAllBooks_ReturnsListOfBooks(){
-        // Arrange
-        Book mockedBookOne = Mockito.mock(Book.class);
-        Book mockedBookTwo = Mockito.mock(Book.class);
+    @BeforeEach
+    void setUp() {
+        bookService = new BookService(bookRepository, toDTOMapper, toEntityMapper);
 
-        List<Book> listBooks = List.of(mockedBookOne, mockedBookTwo);
-
-        Mockito.when(bookRepository.findAll()).thenReturn(listBooks);
-
-        // Act
-        List<Book> callRepo = bookRepository.findAll();
-        List<Book> callService = bookService.getAllBooks();
-
-        // Assert
-        Assertions.assertThat(callRepo).isEqualTo(callService);
-        Assertions.assertThat(callService.size()).isEqualTo(2);
-    }
-
-    @Test
-    public void BookService_IsBookIdValidByBook_ReturnsBoolean(){
-        // Arrange
-        Book book = Book.builder()
+        book = Book.builder()
                 .id(1L)
                 .title("A titel")
                 .genre("A genre")
@@ -51,221 +37,173 @@ public class BookServiceTests {
                 .publisher("A publisher")
                 .build();
 
-        Mockito.when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
-
-        // Act
-        Boolean callService = bookService.isBookIdValid(book);
-
-        // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService).isEqualTo(true);
+        bookDTO = toDTOMapper.apply(book);
     }
 
     @Test
-    public void BookService_IsBookIdValidById_ReturnsBoolean(){
+    public void bookServiceGetAllBooksReturnsListBookDTO() {
         // Arrange
-        Book book = Book.builder()
-                .id(1L)
-                .title("A titel")
-                .genre("A genre")
-                .author("An author")
-                .publisher("A publisher")
-                .build();
-
-        Long bookId = 1L;
-
-        Mockito.when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+        List<BookDTO> expected = List.of(toDTOMapper.apply(book));
+        when(bookRepository.findAll()).thenReturn(List.of(book));
 
         // Act
-        Boolean callService = bookService.isBookIdValid(bookId);
+        List<BookDTO> actual = bookService.getAllBooks();
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService).isEqualTo(true);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(List.class);
+        assertThat(actual.size()).isEqualTo(1);
     }
 
     @Test
-    public void BookService_IsAnyBookAttributeNull_IsNotNull_ReturnsBoolean(){
+    public void bookServiceGetOneBookByIdReturnsBookDTO(){
         // Arrange
-        Book book = Book.builder()
-                .id(1L)
-                .title("A titel")
-                .genre("A genre")
-                .author("An author")
-                .publisher("A publisher")
-                .build();
+        BookDTO expected = toDTOMapper.apply(book);
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         // Act
-        Boolean callService = bookService.isAnyBookAttributeNull(book);
+        BookDTO actual = bookService.getOneBookById(1L);
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService).isEqualTo(false);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(BookDTO.class);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void BookService_IsAnyBookAttributeNull_WithNull_ReturnsBoolean(){
+    public void bookServiceUpdateByPutOneBookReturnsBookDTO(){
         // Arrange
-        Book book = Book.builder()
-                .id(1L)
-                .title(null)
-                .genre("A genre")
-                .author("An author")
-                .publisher("A publisher")
-                .build();
+        BookDTO expected = bookDTO;
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
+        when(bookRepository.save(book)).thenReturn(book);
 
         // Act
-        Boolean callService = bookService.isAnyBookAttributeNull(book);
+        BookDTO actual = bookService.updateByPutOneBook(bookDTO);
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService).isEqualTo(true);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(BookDTO.class);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void BookService_IsAnyBookAttributeNull_WithQuotedNull_ReturnsBoolean(){
+    public void bookServiceUpdateByPatchOneBookReturnsBookDTO(){
         // Arrange
-        Book book = Book.builder()
-                .id(1L)
-                .title("A Title")
-                .genre("null")
-                .author("An author")
-                .publisher("A publisher")
-                .build();
+        book.setPublisher(null);
+        BookDTO expected = toDTOMapper.apply(book);
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
+        when(bookRepository.save(book)).thenReturn(book);
 
         // Act
-        Boolean callService = bookService.isAnyBookAttributeNull(book);
+        BookDTO actual = bookService.updateByPatchOneBook(toDTOMapper.apply(book));
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService).isEqualTo(true);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(BookDTO.class);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void BookService_IsAnyBookAttributeNull_WithBlank_ReturnsBoolean(){
+    public void bookServiceIsBookIdValidReturnsBoolean() {
         // Arrange
-        Book book = Book.builder()
-                .id(1L)
-                .title("A Title")
-                .genre("A genre")
-                .author(" ")
-                .publisher("A publisher")
-                .build();
+        boolean expected = true;
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
 
         // Act
-        Boolean callService = bookService.isAnyBookAttributeNull(book);
+        Boolean actual = bookService.isBookIdValid(bookDTO);
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService).isEqualTo(true);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(Boolean.class);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void BookService_IsAnyBookAttributeNull_WithEmpty_ReturnsBoolean(){
+    public void bookServiceIsAnyBookAttributeNullIsNotNullReturnsBoolean() {
         // Arrange
-        Book book = Book.builder()
-                .id(1L)
-                .title("A Title")
-                .genre("A genre")
-                .author("An author")
-                .publisher("")
-                .build();
+        boolean expected = false;
 
         // Act
-        Boolean callService = bookService.isAnyBookAttributeNull(book);
+        Boolean actual = bookService.isAnyBookAttributeNull(bookDTO);
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService).isEqualTo(true);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(Boolean.class);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void BookService_GetOneBookById_ReturnsOptionalBook(){
+    public void bookServiceIsAnyBookAttributeNullWithNullReturnsBoolean() {
         // Arrange
-        Book mockedBook = Mockito.mock(Book.class);
-
-        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.ofNullable(mockedBook));
+        book.setTitle(null);
+        boolean expected = true;
 
         // Act
-        Optional<Book> callService = bookService.getOneBookById(1L);
+        Boolean actual = bookService.isAnyBookAttributeNull(toDTOMapper.apply(book));
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService.get()).isEqualTo(mockedBook);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(Boolean.class);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void BookService_GetOneBookByTitle_ReturnsOptionalBook(){
+    public void bookServiceIsAnyBookAttributeNullWithQuotedNullReturnsBoolean() {
         // Arrange
-        Book mockedBook = Mockito.mock(Book.class);
-
-        Mockito.when(bookRepository.findByTitle("Title")).thenReturn(Optional.ofNullable(mockedBook));
+        book.setGenre("null");
+        boolean expected = true;
 
         // Act
-        Optional<Book> callService = bookService.getOneBookByTitle("Title");
+        Boolean actual = bookService.isAnyBookAttributeNull(toDTOMapper.apply(book));
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService.get()).isEqualTo(mockedBook);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(Boolean.class);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void BookService_GetOneBookByAuthor_ReturnsOptionalBook(){
+    public void bookServiceIsAnyBookAttributeNullWithBlankReturnsBoolean() {
         // Arrange
-        Book mockedBook = Mockito.mock(Book.class);
-
-        Mockito.when(bookRepository.findByAuthor("Author")).thenReturn(Optional.ofNullable(mockedBook));
+        book.setAuthor(" ");
+        boolean expected = true;
 
         // Act
-        Optional<Book> callService = bookService.getOneBookByAuthor("Author");
+        Boolean actual = bookService.isAnyBookAttributeNull(toDTOMapper.apply(book));
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService.get()).isEqualTo(mockedBook);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(Boolean.class);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void BookService_GetOneBookByGenre_ReturnsOptionalBook(){
+    public void bookServiceIsAnyBookAttributeNullWithEmptyReturnsBoolean() {
         // Arrange
-        Book mockedBook = Mockito.mock(Book.class);
-
-        Mockito.when(bookRepository.findByGenre("Genre")).thenReturn(Optional.ofNullable(mockedBook));
+        book.setPublisher("");
+        boolean expected = true;
 
         // Act
-        Optional<Book> callService = bookService.getOneBookByGenre("Genre");
+        Boolean actual = bookService.isAnyBookAttributeNull(toDTOMapper.apply(book));
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService.get()).isEqualTo(mockedBook);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(Boolean.class);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void BookService_GetOneBookByPublisher_ReturnsOptionalBook(){
+    public void bookServiceGetToUpdateBookReturnsBook() {
         // Arrange
-        Book mockedBook = Mockito.mock(Book.class);
-
-        Mockito.when(bookRepository.findByPublisher("Publisher")).thenReturn(Optional.ofNullable(mockedBook));
+        Book expected = book;
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
 
         // Act
-        Optional<Book> callService = bookService.getOneBookByPublisher("Publisher");
+        Book actual = bookService.getToUpdateBook(toDTOMapper.apply(book));
 
         // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService.get()).isEqualTo(mockedBook);
-    }
-
-    @Test
-    public void BookService_UpdateOneBook_ReturnsBook(){
-        // Arrange
-        Book mockedBook = Mockito.mock(Book.class);
-
-        Mockito.when(bookRepository.save(mockedBook)).thenReturn(mockedBook);
-
-        // Act
-        Book callService = bookService.updateOneBook(mockedBook);
-
-        // Assert
-        Assertions.assertThat(callService).isNotNull();
-        Assertions.assertThat(callService).isEqualTo(mockedBook);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(Book.class);
+        assertThat(actual).isEqualTo(expected);
     }
 }

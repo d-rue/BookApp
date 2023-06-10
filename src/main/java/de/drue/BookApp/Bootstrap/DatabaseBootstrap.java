@@ -15,12 +15,13 @@ public class DatabaseBootstrap implements InitializingBean {
     @Autowired
     private BookRepository bookRepository;
     private Book tmpBook;
+    public final int DB_COUNT = 10;
     @Override
     public void afterPropertiesSet() throws Exception {
         Faker faker=new Faker(new Locale("de"));
         int count = 20;
 
-        for (int i = 0; i < count; i++){
+        for (int i = 0; i < DB_COUNT; i++){
             tmpBook = Book.builder()
                     .title(faker.book().title())
                     .author(faker.book().author())

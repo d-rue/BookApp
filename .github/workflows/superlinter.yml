@@ -4,8 +4,7 @@ name: Super-Linter
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
+
 jobs:
   super-lint:
     name: Lint code base

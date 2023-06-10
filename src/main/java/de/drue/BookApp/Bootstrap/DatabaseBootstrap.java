@@ -1,6 +1,5 @@
 package de.drue.BookApp.Bootstrap;
 
-
 import com.github.javafaker.Faker;
 import de.drue.BookApp.Entity.Book;
 import de.drue.BookApp.Repository.BookRepository;
@@ -13,16 +12,15 @@ import java.util.Locale;
 @Slf4j
 @NoArgsConstructor
 public class DatabaseBootstrap implements InitializingBean {
-
     @Autowired
     private BookRepository bookRepository;
-
     private Book tmpBook;
     @Override
     public void afterPropertiesSet() throws Exception {
         Faker faker=new Faker(new Locale("de"));
+        int count = 20;
 
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < count; i++){
             tmpBook = Book.builder()
                     .title(faker.book().title())
                     .author(faker.book().author())

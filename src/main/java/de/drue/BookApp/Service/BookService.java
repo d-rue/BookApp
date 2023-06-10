@@ -28,39 +28,37 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    public BookDTO getOneBookById(long id) {
+    public BookDTO getOneBookById(final long id) {
         return bookRepository.findById(id)
                 .map(toDTOMapper)
                 .orElseThrow(() -> new ResourceNotFoundException("ID not found: " + id));
     }
 
-    public Long removeOneBook(long id) {
+    public Long removeOneBook(final long id) {
         bookRepository.deleteById(id);
         return id;
     }
 
-    public BookDTO updateByPutOneBook(BookDTO bookDTO) {
+    public BookDTO updateByPutOneBook(final BookDTO bookDTO) {
         if (!isAnyBookAttributeNull(bookDTO) && isBookIdValid(bookDTO)){
             Book savedBook = bookRepository.save(toEntityMapper.apply(bookDTO));
             return toDTOMapper.apply(savedBook);
-        }
-        else {
+        } else {
             throw new ResourceInappropriateException("Book attribute might be null");
         }
     }
 
-    public BookDTO updateByPatchOneBook(BookDTO bookDTO) {
+    public BookDTO updateByPatchOneBook(final BookDTO bookDTO) {
         if (isAnyBookAttributeNull(bookDTO) && isBookIdValid(bookDTO)){
             Book updateBook = getToUpdateBook(bookDTO);
             bookRepository.save(updateBook);
             return toDTOMapper.apply(updateBook);
-        }
-        else {
+        } else {
             throw new ResourceInappropriateException("Book attribute might not be null");
         }
     }
 
-    public Book getToUpdateBook(BookDTO bookDTO) {
+    public Book getToUpdateBook(final BookDTO bookDTO) {
         Book savedBook = bookRepository.findById(bookDTO.id()).get();
         Book tmpBook = new Book();
 
@@ -68,33 +66,29 @@ public class BookService {
 
         if (bookDTO.title() == null || bookDTO.title().equals("null") || bookDTO.title().isBlank() || bookDTO.title().isEmpty()){
             tmpBook.setTitle(savedBook.getTitle());
-        }
-        else {
+        } else {
             tmpBook.setTitle(bookDTO.title());
         }
         if (bookDTO.author() == null || bookDTO.author().equals("null") || bookDTO.author().isBlank() || bookDTO.author().isEmpty()){
             tmpBook.setAuthor(savedBook.getAuthor());
-        }
-        else {
+        } else {
             tmpBook.setAuthor(bookDTO.author());
         }
         if (bookDTO.genre() == null || bookDTO.genre().equals("null") || bookDTO.genre().isBlank() || bookDTO.genre().isEmpty()){
             tmpBook.setGenre(savedBook.getGenre());
-        }
-        else {
+        } else {
             tmpBook.setGenre(bookDTO.genre());
         }
         if (bookDTO.publisher() == null || bookDTO.publisher().equals("null") || bookDTO.publisher().isBlank() || bookDTO.publisher().isEmpty()){
             tmpBook.setPublisher(savedBook.getPublisher());
-        }
-        else {
+        } else {
             tmpBook.setPublisher(bookDTO.publisher());
         }
 
         return tmpBook;
     }
 
-    public boolean isAnyBookAttributeNull(BookDTO bookDTO){
+    public boolean isAnyBookAttributeNull(final BookDTO bookDTO){
         boolean isIdNull = Long.valueOf(bookDTO.id()).equals(0L);
         boolean isTitleNullBlankEmpty = (bookDTO.title() == null || bookDTO.title().equals("null") || bookDTO.title().isBlank() || bookDTO.title().isEmpty());
         boolean isGenreNullBlankEmpty = (bookDTO.genre() == null || bookDTO.genre().equals("null") || bookDTO.genre().isBlank() || bookDTO.genre().isEmpty());
@@ -104,7 +98,7 @@ public class BookService {
         return (isIdNull || isTitleNullBlankEmpty || isGenreNullBlankEmpty || isAuthorNullBlankEmpty || isPublisherNullBlankEmpty);
     }
 
-    public boolean isBookIdValid(BookDTO bookDTO){
+    public boolean isBookIdValid(final BookDTO bookDTO){
         bookRepository.findById(bookDTO.id()).orElseThrow(() -> new ResourceNotFoundException("ID not found: " + bookDTO.id()));
         return true;
     }

@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import de.drue.BookApp.Service.BookService;
-import de.drue.BookApp.Entity.Book;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -20,7 +18,7 @@ public class BookController {
 
     private final BookService bookService;
 
-    public BookController(BookService bookService) {
+    public BookController(final BookService bookService) {
         this.bookService = bookService;
     }
 
@@ -34,28 +32,28 @@ public class BookController {
     @RequestMapping(value = "/book/{id}",
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BookDTO> listOneBook(@PathVariable long id){
+    public ResponseEntity<BookDTO> listOneBook(@PathVariable final long id){
         return new ResponseEntity<>(bookService.getOneBookById(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/book/{id}",
                     method = RequestMethod.DELETE,
                     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Long> deleteOneBook(@PathVariable long id){
+    public ResponseEntity<Long> deleteOneBook(@PathVariable final long id){
         return new ResponseEntity<>(bookService.removeOneBook(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/book",
                     method = RequestMethod.PUT,
                     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BookDTO> putOneBook(@RequestBody BookDTO bookDTO){
+    public ResponseEntity<BookDTO> putOneBook(@RequestBody final BookDTO bookDTO){
         return new ResponseEntity<>(bookService.updateByPutOneBook(bookDTO), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/book",
                     method = RequestMethod.PATCH,
                     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BookDTO> patchOneBook(@RequestBody BookDTO bookDTO){
+    public ResponseEntity<BookDTO> patchOneBook(@RequestBody final BookDTO bookDTO){
         return new ResponseEntity<>(bookService.updateByPatchOneBook(bookDTO), HttpStatus.OK);
     }
 }

@@ -1,6 +1,6 @@
 package de.drue.BookApp.DTO;
 
-public record BookDTO (
+public record BookDTO(
         long id,
         String title,
         String author,

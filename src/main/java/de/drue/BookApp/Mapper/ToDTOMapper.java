@@ -8,7 +8,7 @@ import java.util.function.Function;
 @Service
 public class ToDTOMapper implements Function<Book, BookDTO> {
     @Override
-    public BookDTO apply(Book book) {
+    public BookDTO apply(final Book book) {
         return new BookDTO(
                 book.getId(),
                 book.getTitle(),

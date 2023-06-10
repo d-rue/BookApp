@@ -11,7 +11,8 @@ import java.util.Date;
 @RestControllerAdvice
 public class AppExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ReturnError> handleResourceNotFoundException (final ResourceNotFoundException resourceNotFoundException, final HttpServletRequest request){
+    public ResponseEntity<ReturnError> handleResourceNotFoundException(final ResourceNotFoundException resourceNotFoundException,
+                                                                       final HttpServletRequest request){
         return new ResponseEntity<>(ReturnError.builder()
                 .message(resourceNotFoundException.getMessage())
                 .timestamp(new Date())
@@ -22,7 +23,8 @@ public class AppExceptionHandler {
     }
 
     @ExceptionHandler(ResourceInappropriateException.class)
-    public ResponseEntity<ReturnError> handleResourceInappropriateException (final ResourceInappropriateException resourceInappropriateException, final HttpServletRequest request){
+    public ResponseEntity<ReturnError> handleResourceInappropriateException(final ResourceInappropriateException resourceInappropriateException,
+                                                                            final HttpServletRequest request){
         return new ResponseEntity<>(ReturnError.builder()
                 .message(resourceInappropriateException.getMessage())
                 .timestamp(new Date())

@@ -9,7 +9,7 @@ import java.util.function.Function;
 @Service
 public class ToEntityMapper implements Function<BookDTO, Book> {
     @Override
-    public Book apply(BookDTO bookDTO) {
+    public Book apply(final BookDTO bookDTO) {
         return new Book(
                 bookDTO.id(),
                 bookDTO.title(),

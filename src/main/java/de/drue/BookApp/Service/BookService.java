@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import de.drue.BookApp.Entity.Book;
 import de.drue.BookApp.Repository.BookRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,8 +41,9 @@ public class BookService {
     }
 
     public BookDTO updateByPutOneBook(final BookDTO bookDTO) {
-        if (!isAnyBookAttributeNull(bookDTO) && isBookIdValid(bookDTO)){
-            Book savedBook = bookRepository.save(toEntityMapper.apply(bookDTO));
+        if (!isAnyBookAttributeNull(bookDTO) && isBookIdValidUpdate(bookDTO)){
+            Book toSaveBook = toEntityMapper.apply(bookDTO);
+            Book savedBook = bookRepository.save(toSaveBook);
             return toDTOMapper.apply(savedBook);
         } else {
             throw new ResourceInappropriateException("Book attribute might be null");
@@ -49,12 +51,22 @@ public class BookService {
     }
 
     public BookDTO updateByPatchOneBook(final BookDTO bookDTO) {
-        if (isAnyBookAttributeNull(bookDTO) && isBookIdValid(bookDTO)){
+        if (isAnyBookAttributeNull(bookDTO) && isBookIdValidUpdate(bookDTO)){
             Book updateBook = getToUpdateBook(bookDTO);
             bookRepository.save(updateBook);
             return toDTOMapper.apply(updateBook);
         } else {
             throw new ResourceInappropriateException("Book attribute might not be null");
+        }
+    }
+
+    public BookDTO createOneBook(BookDTO bookDTO) {
+        if (!isAnyBookAttributeNull(bookDTO) && isBookIdValidCreate(bookDTO)){
+            Book toSaveBook = toEntityMapper.apply(bookDTO);
+            Book savedBook = bookRepository.save(toSaveBook);
+            return toDTOMapper.apply(savedBook);
+        } else {
+            throw new ResourceInappropriateException("Book attribute might be null or Id is already present");
         }
     }
 
@@ -98,8 +110,16 @@ public class BookService {
         return (isIdNull || isTitleNullBlankEmpty || isGenreNullBlankEmpty || isAuthorNullBlankEmpty || isPublisherNullBlankEmpty);
     }
 
-    public boolean isBookIdValid(final BookDTO bookDTO){
+    public boolean isBookIdValidUpdate(final BookDTO bookDTO){
         bookRepository.findById(bookDTO.id()).orElseThrow(() -> new ResourceNotFoundException("ID not found: " + bookDTO.id()));
         return true;
     }
+
+    public boolean isBookIdValidCreate(final BookDTO bookDTO){
+        Book valideBook = bookRepository.findById(bookDTO.id()).orElse(null);
+
+        return valideBook == null;
+    }
+
+
 }

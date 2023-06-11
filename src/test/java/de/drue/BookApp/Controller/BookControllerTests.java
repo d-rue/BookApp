@@ -21,9 +21,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,7 +66,7 @@ public class BookControllerTests {
         // Arrange
         listBook = List.of(book);
         listBookDTO = List.of(bookDTO);
-        Mockito.when(bookService.getAllBooks()).thenReturn(listBookDTO);
+        when(bookService.getAllBooks()).thenReturn(listBookDTO);
 
         // Act
         ResultActions response = mockMvc.perform(get("/api/listBooks"));
@@ -77,7 +80,7 @@ public class BookControllerTests {
     @Test
     public void bookControllerListBookReturnsBookDTO() throws Exception {
         // Arrange
-        Mockito.when(bookService.getOneBookById(1L)).thenReturn(bookDTO);
+        when(bookService.getOneBookById(1L)).thenReturn(bookDTO);
 
         // Act
         ResultActions response = mockMvc.perform(get("/api/book/1"));
@@ -92,7 +95,7 @@ public class BookControllerTests {
     public void bookControllerDeleteOneBookReturnsLong() throws Exception {
         // Arrange
         long id = 1L;
-        Mockito.when(bookService.removeOneBook(id)).thenReturn(id);
+        when(bookService.removeOneBook(id)).thenReturn(id);
 
         // Act
         ResultActions response = mockMvc.perform(delete("/api/book/1"));
@@ -106,12 +109,12 @@ public class BookControllerTests {
     @Test
     public void bookControllerPutOneBookReturnsBookDTO() throws Exception {
         // Arrange
-        Mockito.when(bookService.updateByPutOneBook(bookDTO)).thenReturn(bookDTO);
+        when(bookService.updateByPutOneBook(bookDTO)).thenReturn(bookDTO);
 
         // Act
         ResultActions response = mockMvc.perform(
                 put("/api/book")
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
         );
 
@@ -124,12 +127,30 @@ public class BookControllerTests {
     @Test
     public void bookControllerPatchOneBookReturnsBookDTO() throws Exception {
         // Arrange
-        Mockito.when(bookService.updateByPatchOneBook(bookDTO)).thenReturn(bookDTO);
+        when(bookService.updateByPatchOneBook(bookDTO)).thenReturn(bookDTO);
 
         // Act
         ResultActions response = mockMvc.perform(
                         patch("/api/book")
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
+        );
+
+        // Assert
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
+                );
+    }
+
+    @Test
+    public void bookControllerPostOneBookReturnsBookDTO() throws Exception {
+        // Arrange
+        when(bookService.createOneBook(bookDTO)).thenReturn(bookDTO);
+
+        // Act
+        ResultActions response = mockMvc.perform(
+                post("/api/book")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
         );
 

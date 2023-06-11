@@ -56,4 +56,11 @@ public class BookController {
     public ResponseEntity<BookDTO> patchOneBook(@RequestBody final BookDTO bookDTO){
         return new ResponseEntity<>(bookService.updateByPatchOneBook(bookDTO), HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/book",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BookDTO> postOneBook(@RequestBody final BookDTO bookDTO){
+        return new ResponseEntity<>(bookService.createOneBook(bookDTO), HttpStatus.OK);
+    }
 }

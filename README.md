@@ -4,13 +4,14 @@ A Spring Boot Application, which saves randomly generated book data to an In-Mem
   
 Accessible Endpoints at localhost:8080  
   
-| HTTP Methode | URL | Decription |
-| --- | --- | --- |
-| GET: | "/api/listBooks" | List all Books
-| GET: | "/api/book/{id}" | List one Book
-| DELETE: | "/book/{id}" | Delete one Book
-| PUT: | "/book" | Put one Book
-| PATCH: | "/book" | Patch one Book
+| HTTP Methode | URL | Decription      |
+|--------------| --- |-----------------|
+| GET:         | "/api/listBooks" | List all Books  |
+| GET:         | "/api/book/{id}" | List one Book   |
+| DELETE:      | "/book/{id}" | Delete one Book |
+| PUT:         | "/book" | Put one Book    |
+| PATCH:       | "/book" | Patch one Book  |
+| POST:        | "/book" | Create one Book |
   
   
 Tests are in the Test Folder:  

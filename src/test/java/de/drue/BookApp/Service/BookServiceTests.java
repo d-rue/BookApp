@@ -104,13 +104,44 @@ public class BookServiceTests {
     }
 
     @Test
-    public void bookServiceIsBookIdValidReturnsBoolean() {
+    public void bookServiceCreateOneBookReturnsBookDTO(){
+        // Arrange
+        BookDTO expected = toDTOMapper.apply(book);
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.empty());
+        when(bookRepository.save(book)).thenReturn(book);
+
+        // Act
+        BookDTO actual = bookService.createOneBook(toDTOMapper.apply(book));
+
+        // Assert
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(BookDTO.class);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void bookServiceIsBookIdValidUpdateReturnsBoolean() {
         // Arrange
         boolean expected = true;
         when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
 
         // Act
-        Boolean actual = bookService.isBookIdValid(bookDTO);
+        Boolean actual = bookService.isBookIdValidUpdate(bookDTO);
+
+        // Assert
+        assertThat(actual).isNotNull();
+        assertThat(actual).isInstanceOf(Boolean.class);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void bookServiceIsBookIdValidCreateReturnsBoolean() {
+        // Arrange
+        boolean expected = false;
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
+
+        // Act
+        Boolean actual = bookService.isBookIdValidCreate(bookDTO);
 
         // Assert
         assertThat(actual).isNotNull();

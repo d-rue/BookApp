@@ -14,14 +14,14 @@ import java.util.Locale;
 public class DatabaseBootstrap implements InitializingBean {
     @Autowired
     private BookRepository bookRepository;
-    private Book tmpBook;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         Faker faker=new Faker(new Locale("de"));
-        int count = 20;
+        int countToInsertBooks = 20;
 
-        for (int i = 0; i < count; i++){
-            tmpBook = Book.builder()
+        for (int i = 0; i < countToInsertBooks; i++){
+            Book tmpBook = Book.builder()
                     .title(faker.book().title())
                     .author(faker.book().author())
                     .genre(faker.book().genre())

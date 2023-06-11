@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import de.drue.BookApp.Entity.Book;
 import de.drue.BookApp.Repository.BookRepository;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +59,7 @@ public class BookService {
         }
     }
 
-    public BookDTO createOneBook(BookDTO bookDTO) {
+    public BookDTO createOneBook(final BookDTO bookDTO) {
         if (!isAnyBookAttributeNull(bookDTO) && isBookIdValidCreate(bookDTO)){
             Book toSaveBook = toEntityMapper.apply(bookDTO);
             Book savedBook = bookRepository.save(toSaveBook);

@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.ArrayList;
 import java.util.List;
 import static org.mockito.Mockito.when;
@@ -84,8 +83,8 @@ public class BookControllerTests {
         ResultActions response = mockMvc.perform(get("/api/book/1"));
 
         // Assert
-        response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
+        response.andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
                 );
     }
 
@@ -99,8 +98,8 @@ public class BookControllerTests {
         ResultActions response = mockMvc.perform(delete("/api/book/1"));
 
         // Assert
-        response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(Long.toString(id))
+        response.andExpect(status().isOk())
+                .andExpect(content().json(Long.toString(id))
                 );
     }
 
@@ -117,8 +116,8 @@ public class BookControllerTests {
         );
 
         // Assert
-        response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
+        response.andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
                 );
     }
 
@@ -135,8 +134,8 @@ public class BookControllerTests {
         );
 
         // Assert
-        response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
+        response.andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
                 );
     }
 
@@ -153,8 +152,8 @@ public class BookControllerTests {
         );
 
         // Assert
-        response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
+        response.andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writer().withDefaultPrettyPrinter().writeValueAsString(book))
                 );
     }
 }

@@ -64,7 +64,6 @@ public class BookRepositoryTests {
         // Act
         bookRepository.save(book1);
         bookRepository.save(book2);
-
         List<Book> bookList = bookRepository.findAll();
 
         //Assert
@@ -89,7 +88,6 @@ public class BookRepositoryTests {
 
         // Act
         bookRepository.save(book1);
-
         Book savedBook = bookRepository.findById(book1.getId()).get();
 
         //Assert
@@ -105,7 +103,6 @@ public class BookRepositoryTests {
         Optional<Book> savedBook = bookRepository.findById(book1.getId());
 
         //Assert
-
         assertThat(savedBook).isEqualTo(Optional.empty());
     }
 
@@ -115,11 +112,9 @@ public class BookRepositoryTests {
 
         // Act
         bookRepository.save(book1);
-
         Book toUpdateBook = bookRepository.findById(book1.getId()).get();
         toUpdateBook.setAuthor("2. Author");
         toUpdateBook.setGenre("2. Genre");
-
         Book updatedBook = bookRepository.save(toUpdateBook);
 
         //Assert
@@ -135,9 +130,7 @@ public class BookRepositoryTests {
 
         // Act
         bookRepository.save(book1);
-
         bookRepository.deleteById(book1.getId());
-
         Optional<Book> returnedBook = bookRepository.findById(book1.getId());
 
         //Assert
